@@ -42,9 +42,9 @@ REQUIRED_ENV = [
     "FINMIND_TOKEN",
     "TELEGRAM_BOT_TOKEN",
     "TELEGRAM_CHAT_ID",
-    "GOOGLE_SHEET_ID",
-    "GOOGLE_CREDS_JSON",
 ]
+# GOOGLE_SHEET_ID / GOOGLE_CREDS_JSON 選用：兩者都設定才走 Google Sheet，
+# 否則自動用本地 CSV（見 sheet.py is_local_mode）
 
 
 def main():
