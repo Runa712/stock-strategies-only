@@ -10,6 +10,8 @@ export type Strategy = {
   created_at?: string;
   updated_at?: string;
   params: Record<string, any>;
+  setup?: Record<string, any> | null;
+  risk?: Record<string, any> | null;
 };
 
 export type RunResult = {

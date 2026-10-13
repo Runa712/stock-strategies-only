@@ -45,6 +45,8 @@ export default function StrategyForm({ initial, onSaved, saveLabel = "儲存到�
         description,
         source: initial?.source || "manual",
         params,
+        ...(initial?.setup ? { setup: initial.setup } : {}),
+        ...(initial?.risk ? { risk: initial.risk } : {}),
       });
       onSaved?.(s);
     } catch (e: any) {

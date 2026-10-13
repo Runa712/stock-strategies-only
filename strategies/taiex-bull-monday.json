@@ -1,0 +1,62 @@
+{
+  "id": "taiex-bull-monday",
+  "name": "多頭年週一做多大盤",
+  "description": "加權指數收盤站上 240 日均線時，週五收盤做多，下一個週一收盤出場。年線之下不進場。週一開盤買、收盤賣這一段單獨沒有優勢，所以進場點是週五收盤。週五的下一根 K 如果不是週一（例如連假），這筆跳過。params 裡的停損停利只是舊評分器的必填欄位，這套策略依時間出場。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.01,
+    "stop_loss": 0.01,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "signal",
+    "data_requirement": "daily",
+    "side": "long",
+    "instrument": "TAIEX",
+    "signal": {
+      "type": "weekday_hold",
+      "entry_weekday": "friday",
+      "entry_price": "close",
+      "exit_weekday": "monday",
+      "exit_price": "close",
+      "require_next_session_weekday": "monday"
+    },
+    "exit": {
+      "mode": "time",
+      "when": "monday_close"
+    },
+    "filters": [
+      {
+        "type": "close_above_ma",
+        "ma_period": 240,
+        "instrument": "TAIEX"
+      }
+    ],
+    "risk_profile": "short-term-discipline",
+    "execution_note": "定義用加權指數的收盤價計算。實際可以透過台指期或追蹤指數的工具執行。",
+    "notes": [
+      "只在收盤高於 240 日均線時進場。",
+      "進場是週五收盤，不是週一開盤。"
+    ]
+  }
+}

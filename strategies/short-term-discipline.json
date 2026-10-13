@@ -1,0 +1,54 @@
+{
+  "id": "short-term-discipline",
+  "name": "短線紀律",
+  "description": "短線部位共用的風控，本身不下單。開盤前 15 分鐘不進場。同一檔當天最多 2 筆。停損出場後當天不再反手，停損反手那套測試除外。當天已實現獲利達到 4,000 元，或從當天獲利高點回吐一半，就停止再開新倉。連續兩筆虧損後休息 30 分鐘。短線一天最多 5 筆。4,000 元是紀律門檻，不是帳戶餘額。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.01,
+    "stop_loss": 0.01,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "risk",
+    "data_requirement": "none",
+    "side": "none",
+    "signal": {"type": "discipline"},
+    "exit": {"mode": "none"},
+    "notes": [
+      "被規則擋下的進場不計入當天筆數。",
+      "休息滿 30 分鐘後才可以再進場。"
+    ]
+  },
+  "risk": {
+    "session_open": "09:00",
+    "no_entry_first_minutes": 15,
+    "max_trades_per_stock_per_day": 2,
+    "no_reversal_after_stop": true,
+    "reversal_exception_strategy_ids": ["stop-and-reverse"],
+    "daily_profit_lock_twd": 4000,
+    "daily_giveback_of_peak": 0.5,
+    "consecutive_losses_for_rest": 2,
+    "rest_minutes": 30,
+    "max_trades_per_day": 5
+  }
+}

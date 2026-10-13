@@ -1,0 +1,58 @@
+{
+  "id": "dip-near-session-low",
+  "name": "低接",
+  "description": "做多時，進場要在當時已知區間的下緣約 20%。停損 1.0%、停利 2.0%，先碰到哪個先出場；都沒碰到就該節收盤出。判斷是不是低檔要用盤中價。沒有分 K 時只保留定義，不回測。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.02,
+    "stop_loss": 0.01,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "signal",
+    "data_requirement": "intraday",
+    "side": "long",
+    "instrument": "stock",
+    "signal": {
+      "type": "session_extreme",
+      "zone": "near_low",
+      "range_fraction": 0.2
+    },
+    "exit": {
+      "mode": "bracket",
+      "stop_loss": 0.01,
+      "target_return": 0.02,
+      "session_exit": "close",
+      "same_bar": "stop_first"
+    },
+    "filters": [
+      {"type": "index_ma_trend", "ref": "index-ma20-trend"},
+      {"type": "resonance", "ref": "resonance-filters"}
+    ],
+    "risk_profile": "short-term-discipline",
+    "notes": [
+      "區間用進場前已經走出的高低，不用收盤後才知道的全日高低。",
+      "下緣 20% 是進場位置的定義。"
+    ]
+  }
+}

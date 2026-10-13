@@ -1,0 +1,51 @@
+{
+  "id": "index-ma20-trend",
+  "name": "大盤月線濾網＋順勢",
+  "description": "只順著月線方向。指數在 20 日均線之上只做多，之下只做空。大型股看加權指數（TAIEX），中小型看櫃買指數（TPEx）。這是濾網，不是單獨的進出場訊號。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.01,
+    "stop_loss": 0.01,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "filter",
+    "data_requirement": "daily",
+    "side": "both",
+    "signal": {
+      "type": "index_ma_trend",
+      "ma_period": 20,
+      "benchmarks": [
+        {"cap_segment": "large", "index_id": "TAIEX"},
+        {"cap_segment": "small_mid", "index_id": "TPEx"}
+      ],
+      "long_when": "above_ma",
+      "short_when": "below_ma"
+    },
+    "exit": {"mode": "none"},
+    "notes": [
+      "貼齊均線或資料不足時不開新方向。",
+      "回測時請自行傳入對應指數的日 K，大型股用 TAIEX，中小型用 TPEx。"
+    ]
+  }
+}
