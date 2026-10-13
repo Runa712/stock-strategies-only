@@ -1,0 +1,56 @@
+{
+  "id": "down-day-short",
+  "name": "跌日空股票",
+  "description": "個股價格低於前收、當天正在走弱時放空，而不是逆勢去接。停損 1.8%、停利 2.5%，先碰到哪個先出場；都沒碰到就該節收盤出。要確認當天正在跌，需要盤中價。沒有分 K 時只保留定義，不回測。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.025,
+    "stop_loss": 0.018,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "signal",
+    "data_requirement": "intraday",
+    "side": "short",
+    "instrument": "stock",
+    "signal": {
+      "type": "session_direction",
+      "when": "trading_below_prior_close"
+    },
+    "exit": {
+      "mode": "bracket",
+      "stop_loss": 0.018,
+      "target_return": 0.025,
+      "session_exit": "close",
+      "same_bar": "stop_first"
+    },
+    "filters": [
+      {"type": "index_ma_trend", "ref": "index-ma20-trend"},
+      {"type": "resonance", "ref": "resonance-filters"}
+    ],
+    "risk_profile": "short-term-discipline",
+    "notes": [
+      "前收用上一節收盤，不用當天收盤來決定要不要放空。"
+    ]
+  }
+}

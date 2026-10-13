@@ -63,6 +63,8 @@ class StrategyIn(BaseModel):
     description: Optional[str] = ""
     source: Optional[str] = "manual"
     params: dict[str, Any] = Field(default_factory=dict)
+    setup: Optional[dict[str, Any]] = None
+    risk: Optional[dict[str, Any]] = None
 
 
 class AIGenerateIn(BaseModel):

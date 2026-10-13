@@ -1,0 +1,59 @@
+{
+  "id": "next-day-long-after-surge",
+  "name": "大漲／漲停隔天做多",
+  "description": "前一日收盤漲幅達 5% 以上就隔日開盤做多。漲停（收盤漲幅 9.5% 以上）已經包含在 5% 裡面，用同一組停損停利。停損 2.5%、停利 3.5%，先碰到哪個先出場；都沒碰到就當日收盤出。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.035,
+    "stop_loss": 0.025,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "signal",
+    "data_requirement": "daily",
+    "side": "long",
+    "instrument": "stock",
+    "signal": {
+      "type": "prior_day_return",
+      "min_return": 0.05,
+      "includes_limit_up": true,
+      "limit_up_return": 0.095
+    },
+    "exit": {
+      "mode": "bracket",
+      "stop_loss": 0.025,
+      "target_return": 0.035,
+      "session_exit": "close",
+      "same_bar": "stop_first"
+    },
+    "filters": [
+      {"type": "index_ma_trend", "ref": "index-ma20-trend"},
+      {"type": "resonance", "ref": "resonance-filters"}
+    ],
+    "risk_profile": "short-term-discipline",
+    "notes": [
+      "訊號用前一日已經收盤的漲幅，隔日開盤才進場。",
+      "日 K 同一根同時碰到停損與停利時，回測記停損並標成模糊。"
+    ]
+  }
+}

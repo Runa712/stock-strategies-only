@@ -23,6 +23,20 @@ def evaluate(stock_id: str, name: str, strategy: dict | None = None) -> Optional
         "risk_notes": [],
     }
 
+    setup = (strategy or {}).get("setup") or {}
+    if setup.get("family") == "short_term":
+        # 短線規則不走 EPS／技術評分，也不為了這條路徑去抓基本面。
+        result["action"] = "SKIP"
+        result["risk_notes"].append(
+            "短線規則策略不走基本面評分。進出場看策略的 setup，回測用 stock_strategies.short_term。"
+        )
+        result["setup_summary"] = {
+            "role": setup.get("role"),
+            "data_requirement": setup.get("data_requirement"),
+            "signal": (setup.get("signal") or {}).get("type"),
+        }
+        return result
+
     try:
         fund = get_fundamental(stock_id)
         eps_vals = list(fund["eps"].values())

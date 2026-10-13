@@ -50,8 +50,15 @@ export default function StrategyDetail() {
         </button>
       </div>
 
+      {strategy.setup?.family === "short_term" && <SetupCard strategy={strategy} />}
+
       <div className="card">
         <h2 className="font-medium mb-4">策略參數</h2>
+        {strategy.setup?.family === "short_term" && (
+          <p className="text-sm text-muted mb-4">
+            下面是舊版評分器的扁平參數。短線進出看上面的規則；用這份策略跑 watchlist 不會當成基本面買進。
+          </p>
+        )}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
           {Object.entries(strategy.params).map(([k, v]) => (
             <div key={k}>
@@ -109,6 +116,107 @@ export default function StrategyDetail() {
       )}
     </div>
   );
+}
+
+function SetupCard({ strategy }: { strategy: Strategy }) {
+  const setup = strategy.setup || {};
+  const signal = setup.signal || {};
+  const exit = setup.exit || {};
+  const intraday = setup.data_requirement === "intraday" || setup.data_requirement === "intraday_minute";
+  return (
+    <div className="card space-y-4">
+      <div className="flex items-center gap-2">
+        <h2 className="font-medium">短線規則</h2>
+        <span className="badge-short">{roleLabel(setup.role)}</span>
+      </div>
+      {intraday && (
+        <p className="text-sm text-muted">
+          這套要有盤中資料才回測得了。沒有分 K 時只保留規則，不會用日 K 湊結果。
+        </p>
+      )}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm">
+        <Item label="方向" value={sideLabel(setup.side)} />
+        <Item label="資料" value={dataLabel(setup.data_requirement)} />
+        <Item label="訊號" value={signal.type} />
+        {exit.mode === "bracket" && <Item label="停損" value={pct(exit.stop_loss)} />}
+        {exit.mode === "bracket" && <Item label="停利" value={pct(exit.target_return)} />}
+        {exit.mode === "bracket" && <Item label="同一根 K" value="先記停損，並標成模糊" />}
+        {Array.isArray(signal.stop_pcts) && (
+          <Item label="反手停損" value={signal.stop_pcts.map((v: number) => pct(v)).join("、")} />
+        )}
+        {setup.risk_profile && <Item label="紀律" value={setup.risk_profile} />}
+      </div>
+      {Array.isArray(setup.notes) && setup.notes.length > 0 && (
+        <ul className="text-sm text-muted list-disc pl-5 space-y-1">
+          {setup.notes.map((note: string) => <li key={note}>{note}</li>)}
+        </ul>
+      )}
+      {setup.execution_note && <p className="text-sm text-muted">{setup.execution_note}</p>}
+      {Array.isArray(setup.checks) && (
+        <ul className="text-sm space-y-2">
+          {setup.checks.map((check: any) => (
+            <li key={check.id}>
+              <div className="font-mono text-xs text-muted">{check.id}</div>
+              <div>{check.description}</div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {strategy.risk && <RiskList risk={strategy.risk} />}
+    </div>
+  );
+}
+
+function RiskList({ risk }: { risk: Record<string, any> }) {
+  const rows: [string, string][] = [
+    ["開盤", String(risk.session_open ?? "—")],
+    ["開盤後不進場", `${risk.no_entry_first_minutes} 分鐘`],
+    ["同一檔上限", `一天 ${risk.max_trades_per_stock_per_day} 筆`],
+    ["全日上限", `${risk.max_trades_per_day} 筆`],
+    ["停損後反手", risk.no_reversal_after_stop ? "不允許" : "允許"],
+    ["反手例外", (risk.reversal_exception_strategy_ids || []).join("、") || "—"],
+    ["獲利鎖", `${Number(risk.daily_profit_lock_twd).toLocaleString("zh-TW")} 元`],
+    ["高點回吐", `${Math.round(Number(risk.daily_giveback_of_peak) * 100)}% 就停`],
+    ["連虧休息", `${risk.consecutive_losses_for_rest} 筆後休 ${risk.rest_minutes} 分鐘`],
+  ];
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3 text-sm pt-2 border-t border-line">
+      {rows.map(([label, value]) => <Item key={label} label={label} value={value} />)}
+    </div>
+  );
+}
+
+function Item({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <div className="text-xs text-muted">{label}</div>
+      <div className="font-mono">{value}</div>
+    </div>
+  );
+}
+function roleLabel(role?: string) {
+  if (role === "signal") return "進出場";
+  if (role === "filter") return "濾網";
+  if (role === "risk") return "紀律";
+  return role || "—";
+}
+function sideLabel(side?: string) {
+  if (side === "long") return "做多";
+  if (side === "short") return "放空";
+  if (side === "both") return "多空";
+  if (side === "none") return "無";
+  return "—";
+}
+function dataLabel(req?: string) {
+  if (req === "daily") return "日 K";
+  if (req === "intraday") return "盤中分 K";
+  if (req === "intraday_minute") return "一分 K";
+  if (req === "none") return "不需要價量";
+  return "—";
+}
+function pct(v?: number) {
+  if (typeof v !== "number") return "—";
+  return `${(v * 100).toFixed(1)}%`;
 }
 
 function renderVal(v: any) {

@@ -1,0 +1,60 @@
+{
+  "id": "stop-and-reverse",
+  "name": "停損反手",
+  "description": "追高的多單如果碰到停損，就在停損價翻空，持有到當日收盤。停損幅度分別用 1%、1.5%、2%、3% 各算一版。這是紀律裡「停損後不反手」的測試例外。需要一分 K；沒有分 K 時只保留定義，不回測。params.stop_loss 只記下最小的 1%，四個幅度以 setup 為準。",
+  "source": "manual",
+  "created_at": "2026-10-13T00:00:00Z",
+  "updated_at": "2026-10-13T00:00:00Z",
+  "params": {
+    "eps_threshold": 0.0,
+    "roe_threshold": 0.0,
+    "fundamental_pass_required": false,
+    "backtest_years": 3,
+    "hold_days": 1,
+    "min_tech_score_for_signal": 100,
+    "target_return": 0.01,
+    "stop_loss": 0.01,
+    "weight_fundamental": 0.0,
+    "weight_technical": 0.0,
+    "weight_backtest": 1.0,
+    "min_total_score_for_buy": 100,
+    "min_tech_score_for_buy": 100,
+    "use_ma_alignment": false,
+    "use_bollinger_bounce": false,
+    "use_kd_golden_cross": false,
+    "use_macd_bullish": false,
+    "use_volume_patterns": false,
+    "market_filter_enabled": false,
+    "market_filter_ma_period": 20
+  },
+  "setup": {
+    "family": "short_term",
+    "role": "signal",
+    "data_requirement": "intraday_minute",
+    "side": "long",
+    "instrument": "stock_or_futures",
+    "signal": {
+      "type": "stop_and_reverse",
+      "initial_side": "long",
+      "chase": {"range_fraction_from_high": 0.2},
+      "stop_pcts": [0.01, 0.015, 0.02, 0.03],
+      "flip_to": "short",
+      "flip_price": "stop",
+      "hold_until": "session_close"
+    },
+    "exit": {
+      "mode": "flip_to_close",
+      "session_exit": "close"
+    },
+    "filters": [
+      {"type": "index_ma_trend", "ref": "index-ma20-trend"},
+      {"type": "resonance", "ref": "resonance-filters"}
+    ],
+    "risk_profile": "short-term-discipline",
+    "notes": [
+      "追多指收盤落在當時已知區間的上緣 20%。",
+      "沒有碰到停損的追多不計入這套策略的樣本。",
+      "其他策略停損後仍然不反手。"
+    ]
+  }
+}

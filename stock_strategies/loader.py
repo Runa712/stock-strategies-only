@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Optional
 
 from .config import CONFIG
+from .short_term_schema import SetupError, cross_check_short_term, validate_risk, validate_setup
 
 # 策略目錄：環境變數可覆寫（部署時方便）
 STRATEGY_DIR = Path(
@@ -143,7 +144,7 @@ def validate_strategy(data: dict) -> dict:
     clean_params["backtest_years"] = max(1, min(10, clean_params["backtest_years"]))
     clean_params["hold_days"] = max(1, min(120, clean_params["hold_days"]))
 
-    return {
+    result = {
         "id": sid,
         "name": name,
         "description": (data.get("description") or "").strip(),
@@ -152,6 +153,26 @@ def validate_strategy(data: dict) -> dict:
         "updated_at": _now_iso(),
         "params": clean_params,
     }
+    # 沒帶 setup / risk 的舊策略不補欄位，回傳鍵與以前相同。
+    if "setup" in data and data.get("setup") is not None:
+        if not isinstance(data["setup"], dict):
+            raise StrategyError("setup 必須是物件")
+        try:
+            result["setup"] = validate_setup(data["setup"])
+        except SetupError as exc:
+            raise StrategyError(str(exc)) from exc
+    if "risk" in data and data.get("risk") is not None:
+        if not isinstance(data["risk"], dict):
+            raise StrategyError("risk 必須是物件")
+        try:
+            result["risk"] = validate_risk(data["risk"])
+        except SetupError as exc:
+            raise StrategyError(str(exc)) from exc
+    try:
+        cross_check_short_term(result)
+    except SetupError as exc:
+        raise StrategyError(str(exc)) from exc
+    return result
 
 
 def list_strategies() -> list[dict]:
